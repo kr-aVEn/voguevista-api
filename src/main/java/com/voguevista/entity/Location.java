@@ -1,4 +1,6 @@
 package com.voguevista.entity;
+import java.math.BigDecimal;
+
 import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
@@ -26,8 +28,11 @@ public class Location {
 
     private String description;
 
-    private Double latitude;
-    private Double longitude;
+    @Column(precision = 10, scale = 7)
+    private BigDecimal latitude;    
+
+    @Column(precision = 10, scale = 7)
+    private BigDecimal longitude; 
     
 
 }
