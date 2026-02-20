@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VogueVista — Dashboard</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        /* ── Layout (exact match to your old dashboard.jsp) ── */
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ── Sidebar (your original brown) ── */
+        .sidebar {
+            width: 20%;
+            background-color: #a52a2a;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .welcome {
+            margin-bottom: 20px;
+            font-size: 18px;
+            text-align: center;
+            padding: 14px;
+            background-color: #8b4513;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        .welcome span {
+            display: block;
+            font-size: 13px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        .nav {
+            width: 100%;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 15px;
+            background-color: #8b4513;
+            color: white;
+            text-align: center;
+            margin-bottom: 10px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: background-color 0.2s;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        .nav-item:hover {
+            background-color: #6b3a0d;
+        }
+
+        .nav-item.active {
+            background-color: #6b3a0d;
+            border-left: 4px solid #b0e0e6;
+        }
+
+        .nav-item.logout {
+            margin-top: auto;
+            background-color: #6b3a0d;
+        }
+
+        .nav-item.logout:hover {
+            background-color: #4a2800;
+        }
+
+        /* ── Main Content ── */
+        .main-content {
+            width: 80%;
+            display: flex;
+            flex-direction: column;
+            background: #f5f5f5;
+        }
+
+        /* ── Header (your original light blue) ── */
+        .header {
+            background-color: #b0e0e6;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            border-bottom: 2px solid #a52a2a;
+            color: #333;
+        }
+
+        /* ── Content Area ── */
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
+            gap: 20px;
+            overflow-y: auto;
+        }
+
+        /* ── Dashboard Cards (your original box style) ── */
+        .box {
+            flex: 1 1 calc(50% - 20px);
+            min-height: 200px;
+            border-radius: 8px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+        }
+
+        .box:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        /* your original box colors */
+        .box1 { background-color: #d3d3d3; color: black; }
+        .box2 { background-color: #ff4500; color: white; }
+        .box3 { background-color: #ffe4c4; color: black; }
+        .box4 { background-color: #ff7f50; color: white; }
+
+        .box-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+        }
+
+        .box-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .box-desc {
+            font-size: 13px;
+            opacity: 0.8;
+            line-height: 1.5;
+        }
+
+        .box-count {
+            font-size: 32px;
+            font-weight: bold;
+            margin-top: 12px;
+        }
+
+        /* ── Page Sections (shown when nav clicked) ── */
+        .page-section {
+            display: none;
+            width: 100%;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        /* ── Section Header ── */
+        .section-header {
+            background: white;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border-left: 4px solid #a52a2a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .section-header h2 {
+            color: #a52a2a;
+            font-size: 18px;
+        }
+
+        /* ── Cards Grid (packages, locations) ── */
+        .cards-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            flex: 1 1 calc(33% - 16px);
+            min-width: 220px;
+            border-top: 3px solid #a52a2a;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .card h3 {
+            color: #a52a2a;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .card p {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .card .badge {
+            display: inline-block;
+            background: #b0e0e6;
+            color: #333;
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .card .cost {
+            font-size: 18px;
+            font-weight: bold;
+            color: #a52a2a;
+            margin-top: 10px;
+        }
+
+        /* ── Loading spinner ── */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #a52a2a;
+            font-size: 15px;
+        }
+
+        /* ── Empty state ── */
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+
+        .empty .icon { font-size: 48px; margin-bottom: 12px; }
+
+        /* ── Profile Box ── */
+        .profile-box {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 400px;
+            border-top: 3px solid #a52a2a;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .profile-box h3 {
+            color: #a52a2a;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .profile-row {
+            display: flex;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        .profile-row .label {
+            width: 100px;
+            color: #888;
+            font-weight: bold;
+        }
+
+        .profile-row .value {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- ── Sidebar ── -->
+    <aside class="sidebar">
+        <div class="welcome">
+            👤 Welcome,
+            <span id="sidebar-username">User</span>
+        </div>
+
+        <nav class="nav">
+            <a class="nav-item active" onclick="showSection('dashboard')">🏠 Dashboard</a>
+            <a class="nav-item" onclick="showSection('destinations')">🗺️ Destinations</a>
+            <a class="nav-item" onclick="showSection('packages')">📦 Packages</a>
+            <a class="nav-item" onclick="showSection('profile')">👤 Profile</a>
+            <a class="nav-item" href="map.html">🌍 Live Map</a>
+            <a class="nav-item logout" onclick="logout()">🚪 Log Out</a>
+        </nav>
+    </aside>
+
+    <!-- ── Main Content ── -->
+    <main class="main-content">
+        <div class="header" id="page-title">Tourism Dashboard</div>
+
+        <div class="content" id="main-content">
+
+            <!-- ════ DASHBOARD HOME ════ -->
+            <div class="page-section active" id="section-dashboard">
+                <a class="box box1" onclick="showSection('destinations')">
+                    <div>
+                        <div class="box-icon">🗺️</div>
+                        <div class="box-title">Destinations</div>
+                        <div class="box-desc">Explore beautiful locations across South India</div>
+                    </div>
+                    <div class="box-count" id="dest-count">10</div>
+                </a>
+
+                <a class="box box2" onclick="showSection('packages')">
+                    <div>
+                        <div class="box-icon">📦</div>
+                        <div class="box-title">Tour Packages</div>
+                        <div class="box-desc">Browse curated travel packages for every budget</div>
+                    </div>
+                    <div class="box-count" id="pkg-count">4</div>
+                </a>
+
+                <a class="box box3" href="map.html">
+                    <div>
+                        <div class="box-icon">🌍</div>
+                        <div class="box-title">Live Map</div>
+                        <div class="box-desc">View all destinations on an interactive map</div>
+                    </div>
+                    <div class="box-count">→</div>
+                </a>
+
+                <a class="box box4" onclick="showSection('profile')">
+                    <div>
+                        <div class="box-icon">👤</div>
+                        <div class="box-title">My Profile</div>
+                        <div class="box-desc">View and manage your account details</div>
+                    </div>
+                    <div class="box-count">→</div>
+                </a>
+            </div>
+
+            <!-- ════ DESTINATIONS ════ -->
+            <div class="page-section" id="section-destinations">
+                <div class="section-header">
+                    <h2>🗺️ All Destinations</h2>
+                </div>
+                <div class="cards-grid" id="destinations-grid">
+                    <div class="loading">Loading destinations...</div>
+                </div>
+            </div>
+
+            <!-- ════ PACKAGES ════ -->
+            <div class="page-section" id="section-packages">
+                <div class="section-header">
+                    <h2>📦 Tour Packages</h2>
+                </div>
+                <div class="cards-grid" id="packages-grid">
+                    <div class="loading">Loading packages...</div>
+                </div>
+            </div>
+
+            <!-- ════ PROFILE ════ -->
+            <div class="page-section" id="section-profile">
+                <div class="section-header">
+                    <h2>👤 My Profile</h2>
+                </div>
+                <div class="profile-box">
+                    <h3>Account Details</h3>
+                    <div class="profile-row">
+                        <span class="label">Username</span>
+                        <span class="value" id="profile-username">—</span>
+                    </div>
+                    <div class="profile-row">
+                        <span class="label">Role</span>
+                        <span class="value" id="profile-role">—</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<script>
+    const API = 'http://localhost:8080/api';
+
+    // ── On Load: check login ──────────────────────────────
+    window.onload = function () {
+        const username = localStorage.getItem('vv_user');
+        if (!username) {
+            window.location.href = 'login.html';
+            return;
+        }
+        document.getElementById('sidebar-username').textContent = username;
+        document.getElementById('profile-username').textContent = username;
+        document.getElementById('profile-role').textContent = 'User';
+
+        // preload counts
+        loadDestinations();
+        loadPackages();
+    };
+
+    // ── Section Navigation ────────────────────────────────
+    function showSection(name) {
+        // hide all sections
+        document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+        // show selected
+        document.getElementById('section-' + name).classList.add('active');
+
+        // titles
+        const titles = {
+            dashboard:    'Tourism Dashboard',
+            destinations: 'Destinations',
+            packages:     'Tour Packages',
+            profile:      'My Profile'
+        };
+        document.getElementById('page-title').textContent = titles[name] || 'VogueVista';
+    }
+
+    // ── Load Destinations ─────────────────────────────────
+    function loadDestinations() {
+        fetch(`${API}/locations`)
+            .then(r => r.json())
+            .then(locs => {
+                document.getElementById('dest-count').textContent = locs.length;
+
+                const grid = document.getElementById('destinations-grid');
+                grid.innerHTML = '';
+
+                locs.forEach(loc => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <h3>📍 ${loc.name}</h3>
+                        <p>${loc.description}</p>
+                        <span class="badge">${Number(loc.latitude).toFixed(2)}°N, ${Number(loc.longitude).toFixed(2)}°E</span>
+                    `;
+                    grid.appendChild(card);
+                });
+            })
+            .catch(() => {
+                document.getElementById('destinations-grid').innerHTML =
+                    `<div class="empty"><div class="icon">⚠️</div><p>Could not load destinations.<br>Is Spring Boot running?</p></div>`;
+            });
+    }
+
+    // ── Load Packages ─────────────────────────────────────
+    function loadPackages() {
+        fetch(`${API}/packages`)
+            .then(r => r.json())
+            .then(pkgs => {
+                document.getElementById('pkg-count').textContent = pkgs.length;
+
+                const grid = document.getElementById('packages-grid');
+                grid.innerHTML = '';
+
+                if (!pkgs.length) {
+                    grid.innerHTML = `<div class="empty"><div class="icon">📦</div><p>No packages found.</p></div>`;
+                    return;
+                }
+
+                pkgs.forEach(pkg => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <h3>📦 ${pkg.name}</h3>
+                        <p>${pkg.route}</p>
+                        <span class="badge">⏱ ${pkg.duration} days</span>
+                        <div class="cost">₹${Number(pkg.cost).toLocaleString('en-IN')}</div>
+                    `;
+                    grid.appendChild(card);
+                });
+            })
+            .catch(() => {
+                document.getElementById('packages-grid').innerHTML =
+                    `<div class="empty"><div class="icon">⚠️</div><p>Could not load packages.<br>Is Spring Boot running?</p></div>`;
+            });
+    }
+
+    // ── Logout ────────────────────────────────────────────
+    function logout() {
+        localStorage.removeItem('vv_user');
+        window.location.href = 'login.html';
+    }
+</script>
+
+</body>
+</html>
