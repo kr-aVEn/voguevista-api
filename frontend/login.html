@@ -361,22 +361,24 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })
             })
-            .then(res => res.text().then(text => ({ ok: res.ok, text })))
-            .then(({ ok, text }) => {
-                if (ok) {
-                    showMsg('login-msg', '✅ ' + text, 'success');
-                    // Save username for dashboard
-                    localStorage.setItem('vv_user', username);
-                    // Redirect to dashboard after 1 second
-                    setTimeout(() => {
-                        window.location.href = 'dashboard.html';
-                    }, 1000);
-                } else {
-                    showMsg('login-msg', '❌ ' + text, 'error');
-                    btn.disabled = false;
-                    btn.textContent = 'Login';
-                }
-            })
+.then(res => res.json().then(data => ({ ok: res.ok, data })))
+.then(({ ok, data }) => {
+    if (ok) {
+        showMsg('login-msg', '✅ ' + data.message, 'success');
+        localStorage.setItem('vv_user', data.username);
+        localStorage.setItem('vv_userId', data.userId);
+        localStorage.setItem('vv_role', data.role);
+        setTimeout(() => {
+            window.location.href = 'dashboard.html';
+        }, 1000);
+
+    } else {
+        // ✅ Fixed — use data.message not text (text no longer exists)
+        showMsg('login-msg', '❌ ' + (data.message || 'Invalid username or password'), 'error');
+        btn.disabled = false;
+        btn.textContent = 'Login';
+    }
+})
             .catch(() => {
                 showMsg('login-msg', '❌ Cannot reach server. Is Spring Boot running?', 'error');
                 btn.disabled = false;

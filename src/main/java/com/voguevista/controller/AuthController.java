@@ -3,6 +3,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.voguevista.service.AuthService;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.voguevista.dto.RegisterRequest;
@@ -43,14 +46,22 @@ public class AuthController {
         }
     }
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        User user = authService.login(request);
-        if (user != null) {
-            return ResponseEntity.ok("Login successful! Welcome " + user.getUsername());
-        }
-        return ResponseEntity.status(401).body("Invalid username or password");
+public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    User user = authService.login(request);
+    if (user != null) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Login successful");
+        response.put("username", user.getUsername());
+        response.put("userId", user.getId());
+        response.put("role", user.getRole());
+        return ResponseEntity.ok(response);
     }
-    }
+    // ✅ Return JSON for error too — not plain text!
+    Map<String, Object> error = new HashMap<>();
+    error.put("message", "Invalid username or password");
+    return ResponseEntity.status(401).body(error);
+}
+}
     
     
 
