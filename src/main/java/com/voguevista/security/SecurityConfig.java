@@ -22,6 +22,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/packages/**").permitAll() 
                 .requestMatchers("/api/bookings/**").permitAll()
                 .requestMatchers("/api/reviews/**").permitAll() 
+
+                .requestMatchers("/api/activities/**").permitAll() 
+                
                 .anyRequest().authenticated()                 
             );
         return http.build();
@@ -29,6 +32,6 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();  // replaces your plain text passwords
+        return new BCryptPasswordEncoder();  
     }
 }

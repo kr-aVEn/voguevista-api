@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VogueVista — Activities</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+
+        /* ── Layout ── */
+        .container { display: flex; height: 100vh; }
+
+        /* ── Sidebar ── */
+        .sidebar {
+            width: 20%;
+            background-color: #a52a2a;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .welcome {
+            margin-bottom: 20px;
+            font-size: 16px;
+            text-align: center;
+            padding: 14px;
+            background-color: #8b4513;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 15px;
+            background-color: #8b4513;
+            color: white;
+            text-align: center;
+            margin-bottom: 10px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            width: 100%;
+            border: none;
+            font-family: Arial, sans-serif;
+            transition: background-color 0.2s;
+        }
+
+        .nav-item:hover { background-color: #6b3a0d; }
+        .nav-item.active { background-color: #6b3a0d; border-left: 4px solid #b0e0e6; }
+
+        /* ── Main ── */
+        .main-content { width: 80%; display: flex; flex-direction: column; }
+
+        .header {
+            background-color: #b0e0e6;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            border-bottom: 2px solid #a52a2a;
+            color: #333;
+        }
+
+        .content {
+            padding: 24px;
+            overflow-y: auto;
+            height: calc(100vh - 72px);
+        }
+
+        /* ── Location Tabs ── */
+        .location-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 24px;
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            border-top: 3px solid #a52a2a;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .location-tabs h3 {
+            width: 100%;
+            color: #a52a2a;
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+
+        .loc-tab {
+            padding: 8px 16px;
+            background: #f5f5f5;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            font-family: Arial, sans-serif;
+            transition: all 0.2s;
+            color: #555;
+        }
+
+        .loc-tab:hover {
+            background: #8b4513;
+            color: white;
+            border-color: #8b4513;
+        }
+
+        .loc-tab.active {
+            background: #a52a2a;
+            color: white;
+            border-color: #a52a2a;
+            font-weight: bold;
+        }
+
+        /* ── Activities Section ── */
+        .activities-section {
+            background: white;
+            border-radius: 8px;
+            border-top: 3px solid #a52a2a;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .activities-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .activities-header h2 {
+            color: #a52a2a;
+            font-size: 20px;
+        }
+
+        .activities-header .loc-desc {
+            font-size: 13px;
+            color: #888;
+            width: 100%;
+            margin-top: -8px;
+        }
+
+        .count-badge {
+            background: #b0e0e6;
+            color: #333;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        /* ── Search bar ── */
+        .search-bar {
+            margin-bottom: 20px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 11px 16px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-bar input:focus { border-color: #a52a2a; }
+
+        /* ── Activities Grid ── */
+        .activities-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        /* Activity card */
+        .activity-card {
+            flex: 1 1 calc(33% - 16px);
+            min-width: 200px;
+            background: #fff8f8;
+            border: 1px solid #e0c0c0;
+            border-radius: 8px;
+            padding: 18px;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .activity-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 4px;
+            height: 100%;
+            background: #a52a2a;
+        }
+
+        .activity-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(165,42,42,0.15);
+            border-color: #a52a2a;
+        }
+
+        .activity-icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .activity-name {
+            font-size: 15px;
+            font-weight: bold;
+            color: #a52a2a;
+            margin-bottom: 8px;
+        }
+
+        .activity-desc {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* ── State messages ── */
+        .state-msg {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+            width: 100%;
+        }
+
+        .state-msg .icon { font-size: 48px; margin-bottom: 12px; }
+        .state-msg p { font-size: 15px; line-height: 1.8; }
+
+        /* ── All locations overview ── */
+        .overview-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .overview-card {
+            flex: 1 1 calc(25% - 16px);
+            min-width: 180px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-top: 3px solid #a52a2a;
+            text-align: center;
+        }
+
+        .overview-card:hover {
+            background: #a52a2a;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(165,42,42,0.2);
+        }
+
+        .overview-card:hover .ov-count { color: #b0e0e6; }
+
+        .ov-name { font-weight: bold; font-size: 15px; margin-bottom: 6px; color: #a52a2a; }
+        .overview-card:hover .ov-name { color: white; }
+        .ov-count { font-size: 13px; color: #888; }
+        .ov-icon  { font-size: 30px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="welcome">👤 <span id="sidebar-username">User</span></div>
+        <nav style="width:100%">
+            <a class="nav-item" href="dashboard.html">🏠 Dashboard</a>
+            <a class="nav-item" href="map.html">🌍 Live Map</a>
+            <a class="nav-item active">🎯 Activities</a>
+            <a class="nav-item" href="bookings.html">📅 Bookings</a>
+            <a class="nav-item" href="reviews.html">⭐ Reviews</a>
+            <a class="nav-item" onclick="logout()"
+               style="margin-top:auto; background:#6b3a0d;">🚪 Log Out</a>
+        </nav>
+    </aside>
+
+    <!-- Main -->
+    <main class="main-content">
+        <div class="header">🎯 Activities & Things To Do</div>
+        <div class="content">
+
+            <!-- Location Tabs -->
+            <div class="location-tabs">
+                <h3>📍 Select a Destination</h3>
+                <button class="loc-tab active" onclick="showAll()">🗺️ All Destinations</button>
+                <div id="loc-tabs"></div>
+            </div>
+
+            <!-- Activities Section -->
+            <div class="activities-section">
+
+                <!-- Header -->
+                <div class="activities-header">
+                    <div>
+                        <h2 id="section-title">All Destinations</h2>
+                        <div class="loc-desc" id="section-desc">
+                            Click a destination above to see activities
+                        </div>
+                    </div>
+                    <span class="count-badge" id="activity-count">–</span>
+                </div>
+
+                <!-- Search (shown only when location selected) -->
+                <div class="search-bar" id="search-bar" style="display:none">
+                    <input type="text" id="search-input"
+                        placeholder="Search activities..."
+                        oninput="filterActivities()"/>
+                </div>
+
+                <!-- Grid -->
+                <div class="activities-grid" id="activities-grid">
+                    <div class="state-msg">
+                        <div class="icon">🗺️</div>
+                        <p>Loading destinations...</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    const API = 'http://localhost:8080/api';
+    let locations       = [];
+    let allActivities   = [];
+    let currentLocation = null;
+
+    // Activity icons based on keywords
+    function getIcon(name) {
+        const n = name.toLowerCase();
+        if (n.includes('lake') || n.includes('river') || n.includes('dam'))   return '🏞️';
+        if (n.includes('beach'))                                                return '🏖️';
+        if (n.includes('trek') || n.includes('peak') || n.includes('hill'))   return '🥾';
+        if (n.includes('temple') || n.includes('church') || n.includes('monastery')) return '🛕';
+        if (n.includes('garden') || n.includes('park') || n.includes('forest')) return '🌿';
+        if (n.includes('falls') || n.includes('waterfall'))                   return '💧';
+        if (n.includes('palace') || n.includes('fort') || n.includes('museum')) return '🏛️';
+        if (n.includes('boat') || n.includes('cruise') || n.includes('houseboat')) return '🚢';
+        if (n.includes('elephant') || n.includes('wildlife') || n.includes('safari')) return '🐘';
+        if (n.includes('coffee') || n.includes('tea') || n.includes('plantation')) return '🌱';
+        if (n.includes('cave'))                                                return '🪨';
+        if (n.includes('island'))                                              return '🏝️';
+        if (n.includes('zoo'))                                                 return '🦁';
+        if (n.includes('shop') || n.includes('mall') || n.includes('street')) return '🛍️';
+        return '🎯';
+    }
+
+    // ── On Load ───────────────────────────────────────
+    window.onload = function () {
+        const username = localStorage.getItem('vv_user');
+        if (!username) { window.location.href = 'login.html'; return; }
+        document.getElementById('sidebar-username').textContent = username;
+        loadLocations();
+    };
+
+    // ── Load all locations → build tabs ──────────────
+    function loadLocations() {
+        fetch(`${API}/locations`)
+            .then(r => r.json())
+            .then(locs => {
+                locations = locs;
+                const tabsEl = document.getElementById('loc-tabs');
+
+                locs.forEach(loc => {
+                    const btn = document.createElement('button');
+                    btn.className = 'loc-tab';
+                    btn.textContent = '📍 ' + loc.name;
+                    btn.onclick = () => loadActivities(loc);
+                    btn.id = 'tab-' + loc.id;
+                    tabsEl.appendChild(btn);
+                });
+
+                // Show overview cards
+                showAll();
+            })
+            .catch(() => {
+                document.getElementById('activities-grid').innerHTML = `
+                    <div class="state-msg">
+                        <div class="icon">⚠️</div>
+                        <p>Could not load destinations.<br>Is Spring Boot running?</p>
+                    </div>`;
+            });
+    }
+
+    // ── Show all destinations overview ────────────────
+    function showAll() {
+        currentLocation = null;
+
+        // Reset tabs
+        document.querySelectorAll('.loc-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.loc-tab')[0].classList.add('active');
+
+        document.getElementById('section-title').textContent = 'All Destinations';
+        document.getElementById('section-desc').textContent  = 'Click any destination card to explore its activities';
+        document.getElementById('activity-count').textContent = locations.length + ' destinations';
+        document.getElementById('search-bar').style.display  = 'none';
+
+        // Show overview cards
+        const grid = document.getElementById('activities-grid');
+        grid.innerHTML = '';
+
+        if (!locations.length) {
+            grid.innerHTML = `<div class="state-msg"><div class="icon">⏳</div><p>Loading...</p></div>`;
+            return;
+        }
+
+        locations.forEach(loc => {
+            const card = document.createElement('div');
+            card.className = 'overview-card';
+            card.innerHTML = `
+                <div class="ov-icon">📍</div>
+                <div class="ov-name">${loc.name}</div>
+                <div class="ov-count">Click to explore activities</div>
+            `;
+            card.onclick = () => loadActivities(loc);
+            grid.appendChild(card);
+        });
+    }
+
+    // ── Load activities for a location ───────────────
+    function loadActivities(loc) {
+        currentLocation = loc;
+
+        // Update tabs
+        document.querySelectorAll('.loc-tab').forEach(t => t.classList.remove('active'));
+        const tab = document.getElementById('tab-' + loc.id);
+        if (tab) tab.classList.add('active');
+
+        // Update header
+        document.getElementById('section-title').textContent = '📍 ' + loc.name;
+        document.getElementById('section-desc').textContent  = loc.description;
+        document.getElementById('search-bar').style.display  = 'block';
+        document.getElementById('search-input').value        = '';
+        document.getElementById('activity-count').textContent = 'Loading...';
+
+        const grid = document.getElementById('activities-grid');
+        grid.innerHTML = `<div class="state-msg"><div class="icon">⏳</div><p>Loading activities...</p></div>`;
+
+        fetch(`${API}/activities/location/${loc.id}`)
+            .then(r => r.json())
+            .then(activities => {
+                allActivities = activities;
+                document.getElementById('activity-count').textContent = activities.length + ' activities';
+                renderActivities(activities);
+            })
+            .catch(() => {
+                grid.innerHTML = `
+                    <div class="state-msg">
+                        <div class="icon">⚠️</div>
+                        <p>Could not load activities.</p>
+                    </div>`;
+            });
+    }
+
+    // ── Render activity cards ─────────────────────────
+    function renderActivities(activities) {
+        const grid = document.getElementById('activities-grid');
+        grid.innerHTML = '';
+
+        if (!activities.length) {
+            grid.innerHTML = `
+                <div class="state-msg">
+                    <div class="icon">🔍</div>
+                    <p>No activities found.</p>
+                </div>`;
+            return;
+        }
+
+        activities.forEach((act, i) => {
+            const card = document.createElement('div');
+            card.className = 'activity-card';
+            card.style.animationDelay = `${i * 40}ms`;
+            card.innerHTML = `
+                <div class="activity-icon">${getIcon(act.activityName)}</div>
+                <div class="activity-name">${act.activityName}</div>
+                <div class="activity-desc">${act.description}</div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    // ── Search / filter activities ────────────────────
+    function filterActivities() {
+        const q = document.getElementById('search-input').value.toLowerCase();
+        const filtered = allActivities.filter(a =>
+            a.activityName.toLowerCase().includes(q) ||
+            a.description.toLowerCase().includes(q)
+        );
+        document.getElementById('activity-count').textContent = filtered.length + ' activities';
+        renderActivities(filtered);
+    }
+
+    // ── Logout ────────────────────────────────────────
+    function logout() {
+        localStorage.removeItem('vv_user');
+        localStorage.removeItem('vv_userId');
+        localStorage.removeItem('vv_role');
+        window.location.href = 'login.html';
+    }
+</script>
+
+</body>
+</html>
